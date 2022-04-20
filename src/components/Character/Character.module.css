@@ -1,0 +1,27 @@
+.container {
+  margin: 0%;
+  margin-top: 3%;
+  padding: 5%;
+  background-color: black;
+  color: white;
+  border-radius: 5px;
+  height: 135px;
+}
+
+.container:hover {
+  background-color: rgba(0, 0, 0, 0.74);
+  cursor: pointer;
+}
+
+.closeDiv p {
+  text-align: center;
+}
+
+.openDiv {
+  text-align: center;
+}
+
+.openDiv ul {
+  list-style: none;
+  padding: 0px;
+}
