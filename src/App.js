@@ -43,16 +43,16 @@ function App() {
   // Sort by name and by height
   const sortByName = () => {
     const sortedCharacters = [...characters];
-    sortedCharacters.sort((a, b) => a.name.localeCompare(b.name));
+    sortedCharacters.sort((a, b) => -a.name.localeCompare(b.name));
     setCharacters(sortedCharacters);
   };
 
   const sortByHeight = () => {
     const sortedCharacters = [...characters];
     sortedCharacters.sort((a, b) => {
-      if (a.height === 'unknown') return 1;
-      if (b.height === 'unknown') return -1;
-      return b.height - a.height;
+      if (a.height === 'unknown') return -1;
+      if (b.height === 'unknown') return 1;
+      return a.height - b.height;
     });
     setCharacters(sortedCharacters);
   };
