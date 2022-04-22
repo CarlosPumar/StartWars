@@ -4,47 +4,82 @@ import CharacterList from './components/CharacterList/CharacterList';
 import Menu from './components/Menu/Menu';
 import Loading from './components/Loading/Loading';
 import Container from 'react-bootstrap/Container';
+import { NUMBER_ELEMENTS_ON_PAGE } from './constants/utils';
 
 function App() {
   const [characters, setCharacters] = useState([]);
-  const [next, setNext] = useState(null);
-  const [previous, setPrevious] = useState(null);
+  const [shownCharacters, setShownCharacters] = useState([]);
+  const [firstElementPage, setFirstElementPage] = useState(0);
+  const [lastElementPage, setLastElementPage] = useState(
+    NUMBER_ELEMENTS_ON_PAGE
+  );
   const [loading, setLoading] = useState(false);
 
-  const getData = async (url) => {
-    let data;
+  const getData = async () => {
+    let newCharacters;
     setLoading(true);
-    if (!url) {
-      data = await characterService.getAll();
-    } else {
-      data = await characterService.getAll(url);
-    }
-    setCharacters(data.results);
+    newCharacters = await characterService.getAll();
+    setCharacters(newCharacters);
     setLoading(false);
-    setNext(data.next);
-    setPrevious(data.previous);
+    const newShownCharacters = newCharacters.slice(
+      firstElementPage,
+      lastElementPage
+    );
+    setShownCharacters(newShownCharacters);
   };
 
   // getData when load page
   useEffect(() => {
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // When click on next or previous, page load the data
-  const nextDisable = next === null ? true : false;
-  const handleNextPage = async () => {
-    if (!nextDisable) getData(next);
+  //
+  const setNewShownCharacters = (
+    newFirstElementPage = 0,
+    newLastElementPage = NUMBER_ELEMENTS_ON_PAGE
+  ) => {
+    const newShownCharacters = characters.slice(
+      newFirstElementPage,
+      newLastElementPage
+    );
+
+    setShownCharacters(newShownCharacters);
+    setFirstElementPage(newFirstElementPage);
+    setLastElementPage(newLastElementPage);
   };
-  const previousDisable = previous === null ? true : false;
+
+  // When click on next or previous, page load the data
+  const nextDisable = lastElementPage > characters.length ? true : false;
+  const handleNextPage = async () => {
+    if (!nextDisable) {
+      const newFirstElementPage = firstElementPage + NUMBER_ELEMENTS_ON_PAGE;
+      const newLastElementPage = lastElementPage + NUMBER_ELEMENTS_ON_PAGE;
+
+      setNewShownCharacters(newFirstElementPage, newLastElementPage);
+    }
+  };
+  const previousDisable = firstElementPage === 0 ? true : false;
   const handlePreviousPage = async () => {
-    if (!previousDisable) getData(previous);
+    if (!previousDisable) {
+      const newFirstElementPage = firstElementPage - NUMBER_ELEMENTS_ON_PAGE;
+      const newLastElementPage = lastElementPage - NUMBER_ELEMENTS_ON_PAGE;
+
+      setNewShownCharacters(newFirstElementPage, newLastElementPage);
+    }
   };
 
   // Sort by name and by height
   const sortByName = () => {
     const sortedCharacters = [...characters];
     sortedCharacters.sort((a, b) => -a.name.localeCompare(b.name));
+
+    let newShownCharacters = sortedCharacters.slice(0, NUMBER_ELEMENTS_ON_PAGE);
+
     setCharacters(sortedCharacters);
+    setShownCharacters(newShownCharacters);
+    setFirstElementPage(0);
+    setLastElementPage(NUMBER_ELEMENTS_ON_PAGE);
   };
 
   const sortByHeight = () => {
@@ -55,6 +90,16 @@ function App() {
       return a.height - b.height;
     });
     setCharacters(sortedCharacters);
+
+    const newShownCharacters = sortedCharacters.slice(
+      0,
+      NUMBER_ELEMENTS_ON_PAGE
+    );
+
+    setCharacters(sortedCharacters);
+    setShownCharacters(newShownCharacters);
+    setFirstElementPage(0);
+    setLastElementPage(NUMBER_ELEMENTS_ON_PAGE);
   };
 
   // Menu sort options
@@ -76,7 +121,7 @@ function App() {
         {loading && <Loading />}
         {!loading && (
           <CharacterList
-            characters={characters}
+            characters={shownCharacters}
             nextPage={handleNextPage}
             previousPage={handlePreviousPage}
             nextDisable={nextDisable}

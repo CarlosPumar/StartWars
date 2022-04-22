@@ -15,7 +15,7 @@ const CharacterList = ({
   <>
     <Container>
       <Row>
-        {characters.map((character) => (
+        {characters.map((character, i) => (
           <Col key={character.name} xs="5">
             <Character character={character} />
           </Col>

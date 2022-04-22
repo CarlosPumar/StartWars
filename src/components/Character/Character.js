@@ -2,10 +2,11 @@ import { useState } from 'react';
 import styles from './Character.module.css';
 
 const Character = ({ character }) => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(character.visible);
 
   const handleVisibility = () => {
-    setVisible(!visible);
+    character.visible = !character.visible;
+    setVisible(character.visible);
   };
 
   const exists = (element) => {
